@@ -32,11 +32,14 @@ onValue(cartListInDB, function(snapshot) {
 inputCont.addEventListener("submit", function(event) {
     event.preventDefault();
 
-    let inputValue = inputFieldEl.value;
-    if (inputValue) {
+    let inputValue = inputFieldEl.value.trim();
+    const validLettersRegex = /^[a-zA-Z0-9\s]+$/;
+
+    if (validLettersRegex.test(inputValue)) {
         errorEl.textContent = "";
+        inputValue = capitalizeOnlyFirst(inputFieldEl.value);
         push(cartListInDB, inputValue);
-    } else {
+    } else if (inputValue === "") {
         const messagesArray = [
             "You have to tell me what item to add!",
             "Write the item you wish to add",
@@ -46,9 +49,15 @@ inputCont.addEventListener("submit", function(event) {
         ];
         const message = randomNumber(5, messagesArray, errorEl);
         errorEl.textContent = messagesArray[message];
+    } else {
+        errorEl.textContent = "Please enter valid characters"
     }
     clearValue(inputFieldEl);
 })
+
+function capitalizeOnlyFirst(value) {
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}
 
 function randomNumber(num, arr, whatEl) {
     let result = 0;
