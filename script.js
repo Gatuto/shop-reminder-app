@@ -10,8 +10,9 @@ const database = getDatabase(app);
 const cartListInDB = ref(database, "cart");
 
 const inputFieldEl = document.getElementById("input-field");
-const addButtonEl = document.getElementById("add-button");
+const inputCont = document.getElementById("input-container");
 const shoppingListEl = document.getElementById("shopping-list");
+const errorEl = document.getElementById("error");
 
 onValue(cartListInDB, function(snapshot) {
     if (snapshot.exists()) {
@@ -28,13 +29,34 @@ onValue(cartListInDB, function(snapshot) {
     
 });
 
-addButtonEl.addEventListener("click", function() {
+inputCont.addEventListener("submit", function(event) {
+    event.preventDefault();
+
     let inputValue = inputFieldEl.value;
     if (inputValue) {
+        errorEl.textContent = "";
         push(cartListInDB, inputValue);
+    } else {
+        const messagesArray = [
+            "You have to tell me what item to add!",
+            "Write the item you wish to add",
+            "I don't know what you want to add",
+            "Fill the box above the button first!",
+            "I can't read minds!"
+        ];
+        const message = randomNumber(5, messagesArray, errorEl);
+        errorEl.textContent = messagesArray[message];
     }
     clearValue(inputFieldEl);
 })
+
+function randomNumber(num, arr, whatEl) {
+    let result = 0;
+    do {
+        result = Math.floor(Math.random() * num);
+    } while (arr[result] === whatEl.textContent);
+    return result;
+}
 
 function clearValue(element) {
     element.value = "";
